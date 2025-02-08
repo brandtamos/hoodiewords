@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Display Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin-top: 50px;
+            text-align: center;
+        }
+        #output {
+            height: 200px;
+            padding: 10px;
+            overflow-y: auto;
+            font-size: 20px;
+            text-align: right;
+            border: 1px solid black;
+            width: 70%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        span {
+            padding: 5px;
+        }
+        .fade-out {
+            opacity: 0;
+            transition: opacity 2s ease-in-out; /* Transition effect over 2 seconds */
+        }
+    </style>
+</head>
+<body>
+    <h1>Display Page</h1>
+    <div id="output"></div>
+
+    <script
+			  src="https://code.jquery.com/jquery-3.7.1.slim.min.js"
+			  integrity="sha256-kmHvs0B+OpCW5GVHUNjv9rOmY0IvSIRcf7zGUDTDQM8="
+			  crossorigin="anonymous"></script>
+    <script>
+        $(document).ready(function() {
+            const socket = new WebSocket('ws://localhost:3000');
+
+            socket.onmessage = function(event) {
+                event.data.text().then(txt => 
+                    addFadeOutElement(txt)
+                );
+
+            };
+
+            socket.onerror = function(error) {
+                console.error("WebSocket Error:", error);
+            };
+        });
+
+
+        function addFadeOutElement(word) {
+            // Create a new div element
+            const newElement = document.createElement('span');
+            
+            // Set the content of the new div (optional)
+            //newElement.textContent = word;
+            
+            
+            // Append the new div to an existing parent element (e.g., body)
+            //document.body.appendChild(newDiv);
+            
+            $('#output').append(newElement);
+            
+
+            //typing simulation
+            typeSim(newElement, word, 0);
+            
+            
+            // Use setTimeout to add a class after 2 seconds
+            setTimeout(() => { 
+                newElement.classList.add('fade-out');
+                // Optionally, remove the element from the DOM after it fades out
+                setTimeout(() => {
+                    newElement.remove();
+                }, 2000); // Match this with the transition duration (2s)
+            }, 2000);
+        }
+
+        function typeSim(newElement,word, index) {
+            
+            let curIndex = index;
+            if (index < word.length) {
+                newElement.textContent += word[index];
+                curIndex++;
+                
+                setTimeout(() => { typeSim(newElement, word, curIndex); }, 75); // Adjust the delay for faster or slower typing effect
+            }
+        }
+    </script>
+</body>
+</html>
