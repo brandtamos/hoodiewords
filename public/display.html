@@ -40,7 +40,14 @@
 			  crossorigin="anonymous"></script>
     <script>
         $(document).ready(function() {
-            const socket = new WebSocket('ws://localhost:3000');
+            var loc = window.location, new_uri;
+            if (loc.protocol === "https:") {
+                new_uri = "wss:";
+            } else {
+                new_uri = "ws:";
+            }
+            new_uri += "//" + loc.host;
+            const socket = new WebSocket(new_uri);
 
             socket.onmessage = function(event) {
                 event.data.text().then(txt => 
