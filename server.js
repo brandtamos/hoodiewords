@@ -16,7 +16,6 @@ const wss = new WebSocket.Server({ server: httpServer });
 
 wss.on('connection', function connection(ws) {
     ws.on('message', function incoming(message) {
-        console.log('received: %s', message);
         
         // Broadcast the received message to all connected clients except the sender
         wss.clients.forEach(function each(client) {
