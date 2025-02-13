@@ -76,7 +76,7 @@
             const regex = /^[a-zA-Z0-9!@#\$%\^\&*\)\(+=._,<>?/;:'"{}\[\]\\|~`]+$/;
         
             // Exclude specific non-alphanumeric keys like Backspace, Enter, Shift, etc.
-            if (key === "Backspace" || key === "Enter" || key === "Tab" || key === "Escape") {
+            if (key === "Backspace" || key === "Enter" || key === "Tab" || key === "Escape" || key === "Shift" || key === "CapsLock") {
                 return false;
             }
         
