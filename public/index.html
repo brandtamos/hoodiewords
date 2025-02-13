@@ -27,35 +27,62 @@
 			  integrity="sha256-kmHvs0B+OpCW5GVHUNjv9rOmY0IvSIRcf7zGUDTDQM8="
 			  crossorigin="anonymous"></script>
     <script>
+        
+
         $(document).ready(function() {
-            let lastSentWord = '';
+            //let lastSentWord = '';
+            let currentWord = '';
+            const alphaPunctRegex = /^[a-zA-Z0-9!@#\$%\^\&*\)\(+=._-]+$/;
+
+            //setup websocket connection
+            var loc = window.location, new_uri;
+            if (loc.protocol === "https:") {
+                new_uri = "wss:";
+            } else {
+                new_uri = "ws:";
+            }
+            new_uri += "//" + loc.host;
+            const socket = new WebSocket(new_uri);
+
 
             $('#input').on('keydown', function(event) {
                 if (event.key === ' ') { // Check for the space key
-                    const input = $(this);
-                    const text = input.val();
-                    
-                    // Split the text into words and send each word to the display page via WebSocket
-                    words = text.split(/\s+/);
-                    mostRecentWord = words[words.length -1];
+                    console.log(currentWord);
+                    socket.send(currentWord);
+                    currentWord = '';
 
-                    var loc = window.location, new_uri;
-                    if (loc.protocol === "https:") {
-                        new_uri = "wss:";
-                    } else {
-                        new_uri = "ws:";
+                }
+                //handle backspaces
+                else if (event.key === "Backspace"){
+                    if(currentWord.length > 0){
+                        currentWord = currentWord.substring(0, currentWord.length - 1);
                     }
-                    new_uri += "//" + loc.host;
-                    const socket = new WebSocket(new_uri);
-                    
-                    socket.addEventListener("open", (event) => {
-                        console.log("Connected to WebSocket Server");
-                        socket.send(mostRecentWord);
-                        });
+                }
+                else{
+                    //check to see if alphanumeric or punctiation was pressed. if so, add that to current word
+                    const key = event.key;
 
+                    if(isAlphanumericOrPunctuation(event)){
+                        currentWord = currentWord + key;
+                    }
                 }
             });
         });
+
+        function isAlphanumericOrPunctuation(event) {
+            const key = event.key;
+        
+            // Regular expression for alphanumeric characters and common punctuation marks
+            const regex = /^[a-zA-Z0-9!@#\$%\^\&*\)\(+=._,<>?/;:'"{}\[\]\\|~`]+$/;
+        
+            // Exclude specific non-alphanumeric keys like Backspace, Enter, Shift, etc.
+            if (key === "Backspace" || key === "Enter" || key === "Tab" || key === "Escape") {
+                return false;
+            }
+        
+            return regex.test(key);
+        }
+       
     </script>
 </body>
 </html>
